@@ -140,6 +140,35 @@ body {
     }
 }
 
+/* iPad Pro and large tablets (1024px - 1366px) */
+@media (min-width: 1024px) and (max-width: 1366px) {
+    #game-container {
+        padding: 1rem 0;
+    }
+}
+
+/* Mobile (Under 768px) */
+@media (max-width: 767px) {
+    #game-container {
+        padding: 1rem 0;
+    }
+    
+    .interface-layer {
+        padding: 0.5rem;
+    }
+}
+
+/* Small mobile phones (Under 480px) */
+@media (max-width: 480px) {
+    #game-container {
+        padding: 0.5rem 0;
+    }
+    
+    .interface-layer {
+        padding: 0.25rem;
+    }
+}
+
 /* Wobbly Hand-Drawn Borders styling for Leaflet vectors to mimic vintage/painted maps - Only active on high quality */
 body[data-quality="high"] path.leaflet-interactive {
     filter: url(#hand-drawn-filter);
