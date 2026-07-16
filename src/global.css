@@ -76,7 +76,7 @@ body {
 /* --- ESTADOS VISUAIS DA APLICAÇÃO --- */
 /* Injeta dinamicamente a arte apenas se o usuário estiver na tela inicial */
 #game-container.on-start-screen {
-    background-image: url('src/assets/background.jpg');
+    background-image: url('assets/background.jpg');
 }
 #game-container.on-start-screen::before {
     opacity: 1; /* Fade-in suave do escurecimento cinematográfico */
