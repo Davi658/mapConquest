@@ -1,0 +1,8 @@
+- `[x]` Update countryFactionMap in map-data-napoleonic-inline.js to map Louisiana, Canada, and Alaska features correctly
+- `[x]` Update puppets in map-data-napoleonic-inline.js to add Louisiana, Canada, and Alaska dependency labels
+- `[x]` Run manual verification in browser and capture screenshots of North America
+- `[x]` Update puppets details to include specific Vice-Reino, Colônia and Mercantilist tags in map-data-napoleonic-inline.js
+- `[x]` Update walkthrough.md with final screenshots and documentation
+- `[x]` Refine Alaska boundaries in countryFactionMap and puppets of map-data-napoleonic-inline.js (1800)
+- `[x]` Verify Alaska partitioning and labels in the browser
+- `[x]` Regenerate walkthrough.md with final Alaska partitioning screenshots and info

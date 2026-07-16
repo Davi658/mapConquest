@@ -1,0 +1,848 @@
+/* Start Screen Specific Layout & Aesthetics */
+
+#start-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 3-Column Grid Start Screen Layout (PCs) */
+.start-screen-layout {
+    display: grid;
+    grid-template-columns: 320px 420px 320px;
+    grid-template-areas: "story menu hint";
+    justify-content: center;
+    align-items: stretch; /* Stretch panels to the same height as the tallest */
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    margin: 5rem;
+    /* Let intrinsic height be determined by content so the flex parent can center it */
+}
+
+/* Grid Areas Assignments */
+.story-panel {
+    grid-area: story;
+}
+
+.menu-panel {
+    grid-area: menu;
+}
+
+.hint-panel {
+    grid-area: hint;
+}
+
+/* Main Menu Glassmorphic Card (Center) */
+.menu-panel {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-radius: 12px;
+    padding: 2rem 2.5rem; /* Reduced padding to give buttons more room */
+    width: 100%;
+    min-height: 500px; /* Sufficient for title + 5 buttons + footer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-premium);
+    position: relative;
+    overflow: visible; /* Allow content to not be clipped */
+}
+
+/* Decorative Gold Corner Borders */
+.menu-panel::before, .menu-panel::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--color-gold);
+    border-style: solid;
+    pointer-events: none;
+}
+.menu-panel::before {
+    top: 10px;
+    left: 10px;
+    border-width: 2px 0 0 2px;
+}
+.menu-panel::after {
+    bottom: 10px;
+    right: 10px;
+    border-width: 0 2px 2px 0;
+}
+
+/* Game Title Typography */
+.game-title-container {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.game-title {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #ffffff 30%, var(--color-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(229, 193, 88, 0.3));
+    margin-bottom: 0.2rem;
+}
+
+.game-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: var(--color-text-muted);
+}
+
+/* Menu Actions / Buttons Stack */
+.menu-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Slightly tighter gap to fit all 5 buttons comfortably */
+}
+
+/* Individual Button Premium Styles */
+.btn-menu {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(229, 193, 88, 0.35);
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Hover State */
+.btn-menu:hover {
+    background: var(--color-gold);
+    color: var(--color-primary);
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-gold);
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* Active State (press) */
+.btn-menu:active {
+    transform: translateY(1px) scale(0.99);
+    filter: brightness(0.9);
+}
+
+/* Subtle button border animation decoration */
+.btn-menu::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn-menu:hover::before {
+    left: 100%;
+}
+
+/* Icons inside the button */
+.btn-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Small footer info */
+.menu-footer {
+    margin-top: 1rem;
+    font-size: 0.7rem;
+    color: rgba(160, 168, 192, 0.5);
+    letter-spacing: 1px;
+}
+
+/* Side Panels base layout */
+.side-panel {
+    background: rgba(18, 24, 36, 0.35); /* Transparent background to see the map */
+    border: 1px solid rgba(229, 193, 88, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    /* No fixed height: grid's align-items:stretch makes panels match the center panel */
+    justify-content: flex-start;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(229, 193, 88, 0.15);
+    padding-bottom: 0.6rem;
+}
+
+.panel-icon {
+    font-size: 1.4rem;
+}
+
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.panel-content {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.panel-content strong {
+    color: var(--color-text-light);
+}
+
+/* Scrollbar adjustment for Story content if needed */
+.story-panel {
+    overflow-y: auto;
+}
+
+.story-panel::-webkit-scrollbar {
+    width: 4px;
+}
+.story-panel::-webkit-scrollbar-thumb {
+    background: rgba(229, 193, 88, 0.25);
+    border-radius: 2px;
+}
+
+.hint-tip {
+    font-size: 0.85rem;
+    background: rgba(229, 193, 88, 0.04);
+    padding: 0.8rem;
+    border-left: 3px solid var(--color-gold);
+    border-radius: 0 4px 4px 0;
+    color: var(--color-text-light);
+}
+
+/* RESPONSIVE DESIGN - MEDIA QUERIES */
+
+/* Tablet Viewport (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .start-screen-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: 
+            "menu menu"
+            "story hint";
+        max-width: 768px;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        align-items: start;
+    }
+    
+    .menu-panel {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        padding: 3rem 4rem;
+    }
+
+    .side-panel {
+        height: 380px; /* Coordinated shorter height for tablet rows */
+    }
+}
+
+/* Smartphone Viewport (Under 768px) */
+@media (max-width: 767px) {
+    .start-screen-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "menu"
+            "story"
+            "hint";
+        max-width: 480px;
+        gap: 1.2rem;
+        padding: 1rem;
+        align-items: center;
+    }
+    
+    .menu-panel {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        padding: 2.5rem 2rem;
+    }
+    
+    .side-panel {
+        height: auto; /* Let it expand freely on mobile */
+        max-height: none;
+        width: 100%;
+    }
+    
+    .game-title {
+        font-size: 2.2rem;
+    }
+}
+
+/* =========================================================================
+   MODAL OVERLAY & CONTAINER (Glassmorphic Popups)
+   ========================================================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 5, 8, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+}
+
+.modal-container {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    border-radius: 12px;
+    width: 650px;
+    max-width: 95%;
+    max-height: 90vh;
+    box-shadow: var(--shadow-premium);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: modalBorderGlow 4s infinite alternate;
+}
+
+.modal-overlay.active .modal-container {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(229, 193, 88, 0.15);
+}
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.btn-close-modal {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.6rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition-smooth);
+}
+
+.btn-close-modal:hover {
+    color: var(--color-gold);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Template Headers */
+.template-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.template-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.template-header p {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+}
+
+/* =========================================================================
+   PLAY TEMPLATE STYLES (Era Cards)
+   ========================================================================= */
+
+.eras-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.era-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1.2rem;
+    transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.era-card:hover {
+    border-color: rgba(229, 193, 88, 0.4);
+    background: rgba(229, 193, 88, 0.03);
+    transform: translateX(4px);
+}
+
+.era-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.era-icon {
+    font-size: 2rem;
+}
+
+.era-meta h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--color-text-light);
+}
+
+.era-year {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    background: rgba(229, 193, 88, 0.1);
+    border: 1px solid rgba(229, 193, 88, 0.2);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 0.2rem;
+}
+
+.era-desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.btn-start-era {
+    align-self: flex-start;
+    width: auto;
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+    border-color: rgba(229, 193, 88, 0.25);
+}
+
+/* =========================================================================
+   PREVIOUS GAMES STYLES (Saves Lists & Sync)
+   ========================================================================= */
+
+.sync-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.sync-status {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.status-active {
+    color: #5cb85c;
+}
+
+.status-inactive {
+    color: #d9534f;
+}
+
+.btn-sync {
+    width: auto;
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-color: rgba(229, 193, 88, 0.2);
+}
+
+.saves-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.save-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.save-item:hover {
+    border-color: rgba(229, 193, 88, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.save-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.save-icon {
+    font-size: 1.5rem;
+}
+
+.save-details h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+}
+
+.save-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.save-actions {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.save-actions .btn-menu {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    width: auto;
+}
+
+.btn-danger {
+    border-color: rgba(217, 83, 79, 0.4);
+    color: #f2dede;
+}
+
+.btn-danger:hover {
+    background: #d9534f;
+    border-color: #d9534f;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(217, 83, 79, 0.4);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state .sub-text {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* =========================================================================
+   LANGUAGE TEMPLATE STYLES
+   ========================================================================= */
+
+.languages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lang-option-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.lang-option-card:hover {
+    border-color: rgba(229, 193, 88, 0.35);
+    background: rgba(229, 193, 88, 0.03);
+}
+
+.lang-selected {
+    border-color: var(--color-gold);
+    background: rgba(229, 193, 88, 0.05);
+    box-shadow: 0 0 10px rgba(229, 193, 88, 0.1);
+}
+
+.lang-flag {
+    font-size: 1.6rem;
+    margin-right: 1rem;
+}
+
+.lang-name {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    flex: 1;
+}
+
+.lang-check {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-gold);
+}
+
+/* =========================================================================
+   SETTINGS TEMPLATE STYLES (Form and permission managers)
+   ========================================================================= */
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.settings-section {
+    border: 1px solid rgba(229, 193, 88, 0.15);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.settings-section legend {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: var(--color-gold);
+    padding: 0 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    gap: 1.5rem;
+}
+
+.setting-item.flex-column {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.section-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+}
+
+.setting-item label {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+}
+
+/* Stylized Select Dropdown */
+.select-setting {
+    width: auto;
+    font-size: 0.9rem;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    background-color: var(--color-primary);
+    appearance: none;
+    border-color: rgba(229, 193, 88, 0.3);
+}
+
+/* Inputs Range Sliders */
+.range-value-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    max-width: 250px;
+}
+
+.range-value-container input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+}
+
+.range-value-container input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--color-gold-glow);
+}
+
+.range-value-container span {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    width: 40px;
+    text-align: right;
+}
+
+/* Folder Status and permissions buttons */
+.folder-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.8rem;
+}
+
+.folder-status-badge {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+}
+
+.badge-active {
+    background: rgba(92, 184, 92, 0.15);
+    color: #5cb85c;
+    border: 1px solid rgba(92, 184, 92, 0.3);
+}
+
+.badge-inactive {
+    background: rgba(217, 83, 79, 0.15);
+    color: #d9534f;
+    border: 1px solid rgba(217, 83, 79, 0.3);
+}
+
+.btn-folder-action {
+    width: auto;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.settings-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(229, 193, 88, 0.15);
+    padding-top: 1.2rem;
+}
+
+.btn-save-action {
+    width: auto;
+    padding: 0.8rem 2rem;
+}
+
+/* Responsive modal alignments */
+@media (max-width: 767px) {
+    .modal-body {
+        padding: 1.2rem;
+    }
+    
+    .setting-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+    
+    .range-value-container {
+        max-width: 100%;
+    }
+}
+
+/* Custom Modal Glow Animation */
+@keyframes modalBorderGlow {
+    0% {
+        border-color: rgba(229, 193, 88, 0.2);
+    }
+    100% {
+        border-color: rgba(229, 193, 88, 0.4);
+    }
+}
+

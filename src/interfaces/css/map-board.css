@@ -1,0 +1,306 @@
+/**
+ * Map Conquest - Game Board & HUD Layout Style Sheet
+ */
+
+#map-board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* Map Div Leaflet Container */
+#map-container-leaflet {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: #0d121b; /* Fallback map color */
+}
+
+/* Satellite layer styler: reduces brightness to prevent washed-out look and adjusts contrast/saturation for premium texture */
+.satellite-layer-tile {
+    filter: brightness(0.75) contrast(1.2) saturate(1.1) sepia(0.05);
+}
+
+
+/* =========================================================================
+   TOP HUD PANEL (Resources & Turn management)
+   ========================================================================= */
+
+.hud-panel {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 1200px;
+    height: 70px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(15px) saturate(130%);
+    -webkit-backdrop-filter: blur(15px) saturate(130%);
+    border-radius: 10px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    box-shadow: var(--shadow-premium);
+}
+
+.hud-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+}
+
+.hud-item span {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hud-item strong {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+}
+
+.hud-item.gold strong {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Campaign Name Header */
+.hud-title h2 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.btn-end-turn {
+    width: auto;
+    font-size: 0.85rem;
+    padding: 0.5rem 1.5rem;
+    border-color: var(--color-gold);
+}
+
+/* =========================================================================
+   LEFT FLOATING SIDEBAR PANEL (Province & Command Console)
+   ========================================================================= */
+
+.command-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 320px;
+    max-height: calc(100% - 130px);
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(15px) saturate(130%);
+    -webkit-backdrop-filter: blur(15px) saturate(130%);
+    border-radius: 10px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-premium);
+    transform: translateX(-350px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+}
+
+.command-panel.active {
+    transform: translateX(0);
+}
+
+.panel-section-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--color-gold);
+    border-bottom: 1px solid rgba(229, 193, 88, 0.15);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-close-command {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.btn-close-command:hover {
+    color: var(--color-gold);
+}
+
+/* Province Stats List */
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.4rem;
+}
+
+.stat-label {
+    color: var(--color-text-muted);
+}
+
+.stat-value {
+    color: var(--color-text-light);
+    font-weight: 600;
+}
+
+.stat-value.nation-tag {
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Commands Actions Area */
+.actions-title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+}
+
+.actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.actions-stack .btn-menu {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    justify-content: flex-start;
+}
+
+.actions-stack .btn-menu span {
+    font-size: 1.1rem;
+}
+
+/* Faction Emblem Badge on HUD */
+.faction-emblem {
+    font-size: 1.4rem;
+}
+
+/* =========================================================================
+   LEAFLET CUSTOMIZATIONS & TOOLTIPS
+   ========================================================================= */
+
+/* Dark theme zoom controls */
+.leaflet-bar {
+    border: 1px solid var(--color-glass-border) !important;
+    box-shadow: var(--shadow-premium) !important;
+}
+
+.leaflet-bar a {
+    background-color: var(--color-primary) !important;
+    color: var(--color-text-light) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: var(--transition-smooth);
+}
+
+.leaflet-bar a:hover {
+    background-color: var(--color-gold) !important;
+    color: var(--color-primary) !important;
+}
+
+/* Tooltips */
+.leaflet-tooltip-pane .custom-tooltip {
+    background: rgba(7, 9, 14, 0.9) !important;
+    border: 1px solid var(--color-glass-border) !important;
+    color: var(--color-text-light) !important;
+    font-family: var(--font-body) !important;
+    font-size: 0.85rem !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+    font-weight: 600;
+}
+
+.leaflet-tooltip-top::before {
+    border-top-color: var(--color-glass-border) !important;
+}
+
+/* RESPONSIVE LAYOUT adjustments */
+@media (max-width: 767px) {
+    .hud-panel {
+        height: auto;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        top: 10px;
+        width: calc(100% - 20px);
+    }
+    
+    .hud-group {
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .command-panel {
+        width: calc(100% - 40px);
+        left: 20px;
+        bottom: 10px;
+        max-height: 250px;
+    }
+    
+    .stat-row {
+        font-size: 0.85rem;
+    }
+}
+
+/* Remove browser default focus outline/squares around clicked map paths */
+.leaflet-container :focus {
+    outline: none !important;
+}
+.leaflet-interactive:focus {
+    outline: none !important;
+}
+.leaflet-interactive {
+    outline: none !important;
+}
+svg:focus {
+    outline: none !important;
+}
+path:focus {
+    outline: none !important;
+}

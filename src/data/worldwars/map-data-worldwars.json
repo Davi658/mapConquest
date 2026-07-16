@@ -1,0 +1,105 @@
+{
+    "era": "worldwars",
+    "eraName": "Guerras Mundiais",
+    "eraYear": "1914 d.C.",
+    "description": "Alianças geopolíticas complexas, trincheiras e tecnologia industrial. Decida o futuro das nações na Grande Guerra.",
+
+    "nations": {
+        "entente": {
+            "name": "Aliados (Entente)",
+            "fullName": "Tríplice Entente e Aliados",
+            "color": "#2c3e50",
+            "capital": "Londres / Paris",
+            "flag": "🇬🇧",
+            "continent": "europe",
+            "gdp": 24000,
+            "militaryStrength": 92
+        },
+        "central": {
+            "name": "Impérios Centrais",
+            "fullName": "Tríplice Aliança e Impérios Centrais",
+            "color": "#34495e",
+            "capital": "Berlim",
+            "flag": "🇩🇪",
+            "continent": "europe",
+            "gdp": 18000,
+            "militaryStrength": 90
+        },
+        "usa": {
+            "name": "Estados Unidos",
+            "fullName": "Estados Unidos da América",
+            "color": "#0d47a1",
+            "capital": "Washington D.C.",
+            "flag": "🇺🇸",
+            "continent": "americas",
+            "gdp": 21000,
+            "militaryStrength": 88
+        },
+        "italy": {
+            "name": "Reino da Itália",
+            "fullName": "Regno d'Italia",
+            "color": "#1b5e20",
+            "capital": "Roma",
+            "flag": "🇮🇹",
+            "continent": "europe",
+            "gdp": 7000,
+            "militaryStrength": 75
+        },
+        "japan": {
+            "name": "Império do Japão",
+            "fullName": "Dai Nippon Teikoku",
+            "color": "#b71c1c",
+            "capital": "Tóquio",
+            "flag": "🇯🇵",
+            "continent": "asia",
+            "gdp": 8000,
+            "militaryStrength": 82
+        },
+        "neutral": {
+            "name": "Independente (Neutro)",
+            "fullName": "Nações Neutras e Territórios Independentes",
+            "color": "#546e7a",
+            "capital": "-",
+            "flag": "🏳️",
+            "continent": null,
+            "gdp": 0,
+            "militaryStrength": 35
+        }
+    },
+
+    "regions": {
+        "north_america": "América do Norte",
+        "south_america": "América do Sul",
+        "europe": "Europa",
+        "africa": "África",
+        "middle_east": "Oriente Médio",
+        "central_asia": "Ásia Central",
+        "east_asia": "Ásia Oriental",
+        "south_asia": "Sul da Ásia",
+        "southeast_asia": "Sudeste Asiático",
+        "oceania": "Oceania"
+    },
+
+    "countryFactionMap": {
+        "GBR": "entente",
+        "FRA": "entente",
+        "RUS": "entente",
+        "CAN": "entente",
+        "AUS": "entente",
+        "NZL": "entente",
+        "IND": "entente",
+        "ZAF": "entente",
+        "EGY": "entente",
+        "DEU": "central",
+        "AUT": "central",
+        "HUN": "central",
+        "TUR": "central",
+        "BGR": "central",
+        "USA": "usa",
+        "ITA": "italy",
+        "JPN": "japan",
+        "KOR": "japan",
+        "PRK": "japan",
+        "TWN": "japan"
+    }
+}

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Map Conquest - Um jogo estratégico e imersivo de conquistas territoriais diretamente no seu navegador.">
+    <title>Map Conquest - Conquiste o Mundo</title>
+
+    <!-- External Leaflet & Geoman Stylesheets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.3/dist/leaflet-geoman.css">
+
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="src/global.css">
+    <link rel="stylesheet" href="src/interfaces/css/start-screen.css">
+    <link rel="stylesheet" href="src/interfaces/css/map-board.css">
+    <link rel="stylesheet" href="src/interfaces/css/map-editor.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+</head>
+<body>
+
+    <!-- Main Game Container (The Glue) -->
+    <div id="game-container">
+
+        <!-- Start Screen Interface Layer -->
+        <section id="start-screen" class="interface-layer">
+            <div class="start-screen-layout">
+                <!-- Left Column: Story -->
+                <aside class="side-panel story-panel">
+                    <header class="panel-header">
+                        <span class="panel-icon">📜</span>
+                        <h2 class="panel-title">A Lenda de Conquest</h2>
+                    </header>
+                    <div class="panel-content">
+                        <p>Criado em uma era de conflitos e alianças quebradas, <strong>Map Conquest</strong> nasceu da paixão por jogos clássicos de estratégia e disputa de territórios.</p>
+                        <p>Cada província conta uma história de bravura, astúcia e decisões táticas cruciais. Desenvolvido para reviver o espírito de grandes generais, seu objetivo é unificar os continentes sob uma única bandeira.</p>
+                        <p>Trace sua rota, mobilize seus exércitos e que comece a conquista!</p>
+                    </div>
+                </aside>
+
+                <!-- Center Column: Main Menu -->
+                <div class="menu-panel">
+                    <header class="game-title-container">
+                        <h1 class="game-title">Map Conquest</h1>
+                        <p class="game-subtitle">Estratégia & Território</p>
+                    </header>
+                    <main class="menu-buttons">
+                        <button id="btn-play" class="btn-menu">
+                            <span class="btn-icon">⚔️</span>
+                            <span>Play</span>
+                        </button>
+                        <button id="btn-previous" class="btn-menu">
+                            <span class="btn-icon">📜</span>
+                            <span>Jogos Anteriores</span>
+                        </button>
+                        <button id="btn-language" class="btn-menu">
+                            <span class="btn-icon">🌐</span>
+                            <span>Idioma</span>
+                        </button>
+                        <button id="btn-settings" class="btn-menu">
+                            <span class="btn-icon">⚙️</span>
+                            <span>Configurações</span>
+                        </button>
+                        <button id="btn-editor" class="btn-menu">
+                            <span class="btn-icon">🗺️</span>
+                            <span>Editor de Fronteiras</span>
+                        </button>
+                    </main>
+                    <footer class="menu-footer">
+                        <span>Versão 1.0.0 &bull; Antigravity Engines</span>
+                    </footer>
+                </div>
+
+                <!-- Right Column: Fullscreen Hint -->
+                <aside class="side-panel hint-panel">
+                    <header class="panel-header">
+                        <span class="panel-icon">📺</span>
+                        <h2 class="panel-title">Imersão Total</h2>
+                    </header>
+                    <div class="panel-content">
+                        <p>Para comandar seus exércitos com a melhor visão tática e usufruir da máxima fidelidade do mapa de batalha, jogue em tela cheia.</p>
+                        <p class="hint-tip">💡 <strong>Dica:</strong> Pressione a tecla **F11** no seu teclado para expandir a tela do navegador.</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Game Map Board Interface Layer -->
+        <section id="map-board" class="interface-layer">
+            <div id="map-container-leaflet"></div>
+            
+            <!-- Top HUD Panel -->
+            <div class="hud-panel" style="display: none;">
+                <div class="hud-group">
+                    <div class="hud-item faction">
+                        <span class="faction-emblem">🛡️</span>
+                        <strong id="hud-campaign-name">Campanha</strong>
+                    </div>
+                    <div class="hud-item era">
+                        <span>Era:</span>
+                        <strong id="hud-era-name">Romana</strong>
+                    </div>
+                </div>
+                <div class="hud-group">
+                    <div class="hud-item gold">
+                        <span>Ouro:</span>
+                        <strong id="hud-gold-count">500</strong>
+                    </div>
+                    <div class="hud-item turn">
+                        <span>Turno:</span>
+                        <strong id="hud-turn-count">1</strong>
+                    </div>
+                    <button id="btn-end-turn" class="btn-menu btn-end-turn">Passar Turno</button>
+                </div>
+            </div>
+
+            <!-- Left Command Panel (Sidebar) -->
+            <aside id="command-panel" class="command-panel">
+                <header class="panel-section-title" id="province-title">
+                    <span>Província</span>
+                    <span class="btn-close-command" id="btn-close-panel">&times;</span>
+                </header>
+                <div class="stats-list">
+                    <div class="stat-row">
+                        <span class="stat-label">Região Geográfica:</span>
+                        <span class="stat-value" id="stat-region">-</span>
+                    </div>
+                    <div class="stat-row" id="row-faction">
+                        <span class="stat-label">Facção/Aliança:</span>
+                        <span class="stat-value nation-tag" id="stat-faction">-</span>
+                    </div>
+                    <div class="stat-row" id="row-controller">
+                        <span class="stat-label">Controlada por:</span>
+                        <span class="stat-value nation-tag" id="stat-controller">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Tropas Locais:</span>
+                        <span class="stat-value" id="stat-troops">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Impostos Territoriais:</span>
+                        <span class="stat-value" id="stat-taxes">-</span>
+                    </div>
+                </div>
+                <div class="actions-area">
+                    <h3 class="actions-title">Ações de Comando</h3>
+                    <div id="actions-stack" class="actions-stack"></div>
+                </div>
+            </aside>
+        </section>
+
+        <!-- Map Editor Interface Layer -->
+        <section id="map-editor" class="interface-layer">
+            <div id="editor-map-container"></div>
+            
+            <!-- GEE Drawing Toolbar (Top-Left) -->
+            <div id="gee-drawing-toolbar" class="gee-toolbar">
+                <button id="tool-select" class="gee-tool-btn active" title="Modo Seleção / Mão (Arrastar e Editar Vértices)">✋ Selecionar</button>
+                <button id="tool-draw-polygon" class="gee-tool-btn" title="Desenhar Nova Província (Polígono)">⬡ Polígono</button>
+                <button id="tool-draw-rectangle" class="gee-tool-btn" title="Desenhar Retângulo">🟩 Retângulo</button>
+                <button id="tool-draw-marker" class="gee-tool-btn" title="Adicionar Marcador (Ponto)">📍 Ponto</button>
+            </div>
+
+            <!-- GEE Geometry Imports Panel (Top-Right) -->
+            <div id="gee-imports-panel" class="gee-panel imports-panel">
+                <header class="gee-panel-header">
+                    <span class="panel-icon">📂 Imports</span>
+                    <span class="gee-layer-count-badge" id="gee-layer-count">0 camadas</span>
+                </header>
+                <div class="gee-panel-body">
+                    <div id="gee-layer-list" class="gee-layer-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <button id="btn-add-gee-layer" class="gee-action-link">+ adicionar nova camada (facção)</button>
+                </div>
+            </div>
+
+            <!-- GEE Properties Card (Bottom-Left) -->
+            <div id="gee-properties-card" class="gee-card properties-card" style="display: none;">
+                <header class="gee-card-header">
+                    <span class="panel-icon">📝</span>
+                    <span class="gee-card-title">Atributos do Elemento</span>
+                    <span id="btn-close-gee-properties" class="btn-close-modal" style="cursor: pointer;">&times;</span>
+                </header>
+                <div class="gee-card-body">
+                    <div class="gee-field-row">
+                        <label for="gee-prop-id">ID da Província</label>
+                        <input type="text" id="gee-prop-id" class="gee-input" readonly>
+                    </div>
+                    <div class="gee-field-row">
+                        <label for="gee-prop-name">Nome de Exibição</label>
+                        <input type="text" id="gee-prop-name" class="gee-input" placeholder="Ex: Paris">
+                    </div>
+                    <div class="gee-field-row">
+                        <label for="gee-prop-layer-select">Nação/Camada</label>
+                        <select id="gee-prop-layer-select" class="gee-select">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="gee-field-row">
+                        <label>Cor do Território</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="gee-prop-color" class="gee-color-picker">
+                            <span id="gee-prop-color-hex" class="color-hex-label">#e5c158</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button id="btn-gee-annex-feature" class="gee-btn gee-btn-gold" style="flex: 1;">🔗 Anexar</button>
+                        <button id="btn-gee-cut-feature" class="gee-btn gee-btn-gold" style="flex: 1;" title="Cortar Território (Desenhar Linha)">✂️ Cortar</button>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <button id="btn-gee-separate-island" class="gee-btn gee-btn-gold" style="width: 100%;" title="Separar uma ilha/parte em uma nova nação">🏝️ Separar Ilha</button>
+                    </div>
+                    <div class="gee-card-actions" style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button id="btn-gee-delete-feature" class="gee-btn gee-btn-danger" style="flex: 1;">🗑️ Excluir Província</button>
+                        <button id="btn-gee-save-feature" class="gee-btn gee-btn-success" style="flex: 1;">💾 Salvar Nós</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEE System Actions Panel (Bottom-Right) -->
+            <div id="gee-system-panel" class="gee-panel system-panel">
+                <header class="gee-panel-header">
+                    <span class="panel-icon">⚙️ Painel de Controle</span>
+                </header>
+                <div class="gee-panel-body" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Era selection -->
+                    <div class="gee-field-row">
+                        <label for="gee-era-select">Selecionar Era</label>
+                        <select id="gee-era-select" class="gee-select">
+                            <option value="napoleonic">Era Napoleônica</option>
+                            <option value="medieval">Era Medieval</option>
+                            <option value="worldwars">Guerras Mundiais</option>
+                            <option value="modern">Mundo Moderno</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button id="btn-gee-load" class="gee-btn gee-btn-gold" style="flex: 1;">📂 Carregar</button>
+                        <button id="btn-gee-new-empty" class="gee-btn gee-btn-danger-outline" style="flex: 1;" title="Novo mapa vazio do zero">✨ Novo</button>
+                    </div>
+
+                    <!-- History / Basemaps -->
+                    <div style="display: flex; gap: 6px; margin-top: 4px;">
+                        <button id="btn-gee-undo" class="gee-btn gee-btn-gold" style="flex: 1;" title="Desfazer (Ctrl+Z)" disabled>↩️ Desfazer</button>
+                        <button id="btn-gee-redo" class="gee-btn gee-btn-gold" style="flex: 1;" title="Refazer (Ctrl+Y)" disabled>↪️ Refazer</button>
+                    </div>
+
+                    <div class="gee-field-row" style="margin-top: 4px;">
+                        <label for="gee-basemap-select">Mapa de Fundo</label>
+                        <select id="gee-basemap-select" class="gee-select">
+                            <option value="satellite">Satélite (Esri)</option>
+                            <option value="physical">Físico (OpenTopo)</option>
+                            <option value="streets">Político (OSM)</option>
+                            <option value="dark">Tema Escuro (CartoDB)</option>
+                            <option value="light">Tema Claro (CartoDB)</option>
+                        </select>
+                    </div>
+
+                    <!-- Server / Files -->
+                    <div class="border-top" style="padding-top: 10px; margin-top: 4px;">
+                        <button id="btn-gee-save" class="gee-btn gee-btn-success" style="width: 100%; margin-bottom: 6px;">💾 Salvar no Servidor</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="btn-gee-import" class="gee-btn gee-btn-gold-outline" style="flex: 1;">📥 Importar</button>
+                            <button id="btn-gee-export" class="gee-btn gee-btn-gold-outline" style="flex: 1;">📤 Exportar</button>
+                        </div>
+                        <input type="file" id="input-gee-import-file" accept=".geojson,.json" style="display: none;">
+                    </div>
+
+                    <!-- Back -->
+                    <div class="border-top" style="padding-top: 8px;">
+                        <button id="btn-gee-back" class="gee-btn gee-btn-danger-outline" style="width: 100%;">Voltar ao Menu</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEE Faction Settings Modal Overlay -->
+            <div id="gee-layer-modal" class="gee-modal-overlay" style="display: none;">
+                <div class="gee-modal">
+                    <header class="gee-modal-header">
+                        <h3 id="layer-modal-title">Configurações da Camada</h3>
+                        <span id="btn-close-layer-modal" class="btn-close-modal" style="cursor: pointer;">&times;</span>
+                    </header>
+                    <div class="gee-modal-body" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+                        <div class="gee-field-row" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label for="layer-modal-name">Nome da Facção/Camada</label>
+                            <input type="text" id="layer-modal-name" class="gee-input" placeholder="Ex: Portugal">
+                        </div>
+                        <div class="gee-field-row" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label for="layer-modal-color">Cor da Camada</label>
+                            <input type="color" id="layer-modal-color" class="gee-color-picker-large" style="width: 100%; height: 40px; border: none; cursor: pointer; border-radius: 6px;">
+                        </div>
+                        <div class="gee-modal-actions" style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 10px;">
+                            <button id="btn-layer-modal-cancel" class="gee-btn gee-btn-danger-outline">Cancelar</button>
+                            <button id="btn-layer-modal-save" class="gee-btn gee-btn-success">Salvar Camada</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Geometry Tools Modal -->
+            <div id="geometry-tools-modal" class="geometry-modal" style="display: none;">
+                <header class="modal-header">
+                    <span class="panel-icon">🛠️</span>
+                    <h3 id="geom-modal-title" class="modal-title">Edição de Fronteira</h3>
+                    <span class="btn-close-modal" id="btn-close-geom-modal" style="cursor: pointer;">&times;</span>
+                </header>
+                <div class="modal-body" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <p class="geom-help-text">Manipule as fronteiras de <strong id="geom-country-name"></strong> no mapa:</p>
+                    <ul class="geom-instructions">
+                        <li>📍 <strong>Mover nós:</strong> Arraste os círculos para alterar a posição.</li>
+                        <li>➕ <strong>Criar nós:</strong> Arraste os pontos transparentes no meio das linhas.</li>
+                        <li>🗑️ <strong>Deletar nós:</strong> Clique com o botão direito sobre um nó ou use a tecla Delete/X no teclado.</li>
+                        <li>🧲 <strong>Juntar nós:</strong> Aproxime dois nós para que eles se unam ou use F/M.</li>
+                        <li>🖱️ <strong>Múltipla Seleção:</strong> Segure <strong>Shift</strong> e clique nos nós para selecionar vários.</li>
+                    </ul>
+                    <div id="geom-multi-select-section" style="display: none; border-top: 1px solid rgba(229, 193, 88, 0.15); padding-top: 8px; margin-top: 8px;">
+                        <p class="geom-help-text" style="margin-bottom: 6px;">Nós selecionados: <strong id="geom-selected-nodes-count">0</strong></p>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="btn-geom-delete-selected" class="gee-btn gee-btn-danger" style="flex: 1; padding: 4px 8px; font-size: 0.75rem;">🗑️ Excluir Selecionados</button>
+                            <button id="btn-geom-snap-selected" class="gee-btn gee-btn-gold" style="flex: 1; padding: 4px 8px; font-size: 0.75rem;">🧲 Juntar Selecionados</button>
+                        </div>
+                    </div>
+                    <div class="editor-button-group" style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button id="btn-geom-close-loop" class="btn-menu btn-gold btn-small" style="display: none; flex: 1;">🔁 Fechar Fronteira (Polígono)</button>
+                        <button id="btn-geom-finish" class="btn-menu btn-success btn-small" style="flex: 1;">💾 Concluir & Salvar Nós</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Scripts de inicialização do seu jogo devem ser chamados aqui -->
+
+
+    <!-- Turf.js Advanced GIS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+    <!-- External Leaflet Library Script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Inline Data - Factions and Map Configurations per Era -->
+    <script src="src/data/medieval/map-data-medieval-inline.js"></script>
+    <script src="src/data/napoleonic/map-data-napoleonic-inline.js"></script>
+    <script src="src/data/worldwars/map-data-worldwars-inline.js"></script>
+    <script src="src/data/modern/map-data-modern-inline.js"></script>
+    <!-- Base Map Offline Fallback Grid -->
+    <script src="src/data/modern/geojson-modern-inline.js"></script>
+
+    <!-- Core Game Engine Scripts -->
+    <script src="src/global.js"></script>
+
+    <!-- Game Templates -->
+    <script src="src/interfaces/templatesStarter/play.js"></script>
+    <script src="src/interfaces/templatesStarter/previous.js"></script>
+    <script src="src/interfaces/templatesStarter/language.js"></script>
+    <script src="src/interfaces/templatesStarter/settings.js"></script>
+
+    <!-- Interface Controllers -->
+    <script src="src/interfaces/start-screen.js"></script>
+    <script src="src/interfaces/map-board.js"></script>
+    <!-- Leaflet Geoman JS -->
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.18.3/dist/leaflet-geoman.js"></script>
+    <!-- Map Editor Controller -->
+    <script src="src/interfaces/map-editor.js"></script>
+    <!-- SVG Hand-Drawn Borders Filter -->
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="hand-drawn-filter">
+                <!-- baseFrequency defines the tightness of the wiggle. scale defines the amplitude of distortion. -->
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+</body>
+
+</html>

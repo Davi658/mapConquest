@@ -1,0 +1,105 @@
+{
+    "era": "medieval",
+    "eraName": "Idade Média",
+    "eraYear": "1066 d.C.",
+    "description": "A era dos senhores feudais, cruzadas e castelos de pedra. Lute pelo trono normando ou resista às invasões.",
+
+    "nations": {
+        "england": {
+            "name": "Inglaterra",
+            "fullName": "Reino da Inglaterra",
+            "color": "#b71c1c",
+            "capital": "Londres",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "continent": "europe",
+            "gdp": 11000,
+            "militaryStrength": 80
+        },
+        "france": {
+            "name": "França",
+            "fullName": "Reino da França",
+            "color": "#0f4c81",
+            "capital": "Paris",
+            "flag": "🇫🇷",
+            "continent": "europe",
+            "gdp": 13000,
+            "militaryStrength": 85
+        },
+        "hre": {
+            "name": "Sacro Império",
+            "fullName": "Sacro Império Romano-Germânico",
+            "color": "#ffd54f",
+            "capital": "Aachen",
+            "flag": "🏰",
+            "continent": "europe",
+            "gdp": 16000,
+            "militaryStrength": 88
+        },
+        "byzantium": {
+            "name": "Bizâncio",
+            "fullName": "Império Romano do Oriente (Bizantino)",
+            "color": "#6a1b9a",
+            "capital": "Constantinopla",
+            "flag": "🏰",
+            "continent": "europe",
+            "gdp": 15000,
+            "militaryStrength": 90
+        },
+        "fatimid": {
+            "name": "Califado Fatímida",
+            "fullName": "Califado Fatímida do Cairo",
+            "color": "#2e7d32",
+            "capital": "Cairo",
+            "flag": "🟩",
+            "continent": "middle_east",
+            "gdp": 14000,
+            "militaryStrength": 83
+        },
+        "neutral": {
+            "name": "Independente",
+            "fullName": "Ducados e Condados Independentes",
+            "color": "#546e7a",
+            "capital": "-",
+            "flag": "🏳️",
+            "continent": null,
+            "gdp": 0,
+            "militaryStrength": 45
+        }
+    },
+
+    "regions": {
+        "north_america": "América do Norte",
+        "south_america": "América do Sul",
+        "europe": "Europa",
+        "africa": "África",
+        "middle_east": "Oriente Médio",
+        "central_asia": "Ásia Central",
+        "east_asia": "Ásia Oriental",
+        "south_asia": "Sul da Ásia",
+        "southeast_asia": "Sudeste Asiático",
+        "oceania": "Oceania"
+    },
+
+    "countryFactionMap": {
+        "GBR": "england",
+        "IRL": "england",
+        "FRA": "france",
+        "BEL": "france",
+        "LUX": "france",
+        "DEU": "hre",
+        "AUT": "hre",
+        "CHE": "hre",
+        "CZE": "hre",
+        "ITA": "hre",
+        "NLD": "hre",
+        "GRC": "byzantium",
+        "TUR": "byzantium",
+        "BGR": "byzantium",
+        "CYP": "byzantium",
+        "EGY": "fatimid",
+        "ISR": "fatimid",
+        "JOR": "fatimid",
+        "LBN": "fatimid",
+        "SAU": "fatimid"
+    }
+}
