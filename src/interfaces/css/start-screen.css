@@ -299,23 +299,97 @@
         gap: 1.2rem;
         padding: 1rem;
         align-items: center;
+        margin: 2rem 1rem;
     }
     
     .menu-panel {
         width: 100%;
         max-width: 100%;
         height: auto;
-        padding: 2.5rem 2rem;
+        padding: 2rem 1.5rem;
+        min-height: auto;
     }
     
     .side-panel {
         height: auto; /* Let it expand freely on mobile */
         max-height: none;
         width: 100%;
+        padding: 1.5rem;
     }
     
     .game-title {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .game-subtitle {
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+    }
+    
+    .btn-menu {
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
+        gap: 8px;
+    }
+    
+    .btn-icon {
+        font-size: 1rem;
+    }
+    
+    .panel-header {
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.4rem;
+    }
+    
+    .panel-title {
+        font-size: 1rem;
+    }
+    
+    .panel-content {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+}
+
+/* Extra small mobile phones */
+@media (max-width: 480px) {
+    .start-screen-layout {
+        margin: 1rem 0.5rem;
+        padding: 0.8rem;
+        gap: 1rem;
+    }
+    
+    .menu-panel {
+        padding: 1.5rem 1rem;
+    }
+    
+    .side-panel {
+        padding: 1rem;
+    }
+    
+    .game-title {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+    
+    .game-subtitle {
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+    }
+    
+    .btn-menu {
+        font-size: 0.85rem;
+        padding: 0.7rem 0.8rem;
+    }
+    
+    .panel-content {
+        font-size: 0.8rem;
+    }
+    
+    .hint-tip {
+        font-size: 0.75rem;
+        padding: 0.6rem;
     }
 }
 

@@ -923,3 +923,223 @@
     transform: scale(1.6) !important;
 }
 
+/* Box Selection Rectangle Styling (Windows-style) */
+.leaflet-overlay-pane .leaflet-interactive {
+    cursor: crosshair !important;
+}
+
+/* Custom box selection rectangle styling */
+.box-selection-rectangle {
+    background: rgba(0, 120, 212, 0.2) !important;
+    border: 1px dashed #0078d4 !important;
+    border-radius: 2px !important;
+    pointer-events: none !important;
+}
+
+/* Responsive Design for Mobile and Tablet */
+@media (max-width: 1024px) {
+    /* Adjust toolbar for tablet */
+    .gee-toolbar {
+        left: 8px;
+        top: 70px;
+        padding: 4px;
+        gap: 4px;
+    }
+    
+    .gee-tool-btn {
+        font-size: 0.7rem;
+        padding: 6px 8px;
+        gap: 6px;
+    }
+    
+    /* Adjust panels for tablet */
+    .imports-panel,
+    .system-panel {
+        width: 280px;
+        max-height: 35vh;
+    }
+    
+    .gee-card {
+        width: 300px;
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .geometry-modal {
+        width: 300px;
+        right: 10px;
+        top: 10px;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile adjustments */
+    .gee-toolbar {
+        left: 4px;
+        top: 60px;
+        padding: 3px;
+        gap: 3px;
+        border-radius: 6px;
+    }
+    
+    .gee-tool-btn {
+        font-size: 0.65rem;
+        padding: 5px 6px;
+        gap: 4px;
+        border-radius: 4px;
+    }
+    
+    .gee-tool-btn span:last-child {
+        display: none; /* Hide text on mobile, show only icons */
+    }
+    
+    /* Make panels collapsible/overlay on mobile */
+    .imports-panel,
+    .system-panel {
+        width: 260px;
+        max-height: 30vh;
+        right: 10px;
+    }
+    
+    .imports-panel {
+        top: 10px;
+    }
+    
+    .system-panel {
+        bottom: 10px;
+    }
+    
+    .gee-card {
+        width: 260px;
+        bottom: 5px;
+        left: 5px;
+        border-radius: 8px;
+    }
+    
+    .geometry-modal {
+        width: 260px;
+        right: 5px;
+        top: 5px;
+        padding: 0.8rem;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+    
+    .geom-instructions {
+        font-size: 0.75rem;
+    }
+    
+    .geom-instructions li {
+        padding: 6px 8px;
+    }
+    
+    /* Adjust marker sizes for touch */
+    .gee-selected-vertex {
+        transform: scale(1.6) !important;
+    }
+    
+    .blender-vertex-hover {
+        transform: scale(1.5) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Small mobile phones */
+    .gee-toolbar {
+        left: 2px;
+        top: 50px;
+        padding: 2px;
+        gap: 2px;
+    }
+    
+    .gee-tool-btn {
+        font-size: 0.6rem;
+        padding: 4px 5px;
+        gap: 3px;
+    }
+    
+    .imports-panel,
+    .system-panel {
+        width: 220px;
+        max-height: 25vh;
+        right: 5px;
+    }
+    
+    .gee-card {
+        width: 220px;
+        bottom: 2px;
+        left: 2px;
+    }
+    
+    .geometry-modal {
+        width: 220px;
+        right: 2px;
+        top: 2px;
+        padding: 0.6rem;
+    }
+    
+    .geom-help-text {
+        font-size: 0.75rem;
+    }
+    
+    .geom-instructions {
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+    
+    .geom-instructions li {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+    }
+    
+    /* Larger touch targets for mobile */
+    .gee-btn {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .gee-field-row label {
+        font-size: 0.7rem;
+    }
+    
+    .gee-input,
+    .gee-select {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Devices with touch input */
+    .gee-tool-btn:hover {
+        color: var(--color-text-muted);
+        background: transparent;
+    }
+    
+    .gee-tool-btn:active {
+        color: var(--color-text-light);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .gee-tool-btn.active {
+        color: var(--color-gold);
+        background: rgba(229, 193, 88, 0.12);
+    }
+    
+    /* Larger touch targets */
+    .gee-tool-btn,
+    .gee-btn,
+    .gee-layer-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better visibility for selected vertices on touch */
+    .gee-selected-vertex {
+        transform: scale(1.8) !important;
+        filter: drop-shadow(0 0 12px #e5c158) !important;
+    }
+}
+

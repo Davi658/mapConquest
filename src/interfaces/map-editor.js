@@ -47,6 +47,12 @@ class MapEditorController {
         this.selectedPaths = {}; // Map of "ringIndex,vertexIndex" -> true
         this.isSeparateIslandMode = false;
         this.draggedMarkerStartLatLng = null;
+
+        // Box selection tracking
+        this.isBoxSelecting = false;
+        this.boxSelectStartLatLng = null;
+        this.boxSelectRectangle = null;
+        this.isBoxSelectionMode = false; // Shift+double click activates this mode
     }
 
     /**
@@ -203,6 +209,9 @@ class MapEditorController {
                 this.redo();
             }
         });
+
+        // Bind box selection events on map container
+        this.bindBoxSelectionEvents();
 
         this.bindEvents();
         this.initialized = true;
@@ -430,20 +439,23 @@ class MapEditorController {
 
         // Document-level keydown shortcuts (Blender-like node editing)
         document.addEventListener('keydown', (e) => {
-            // Only trigger if a feature is selected and editing is active
-            if (!this.selectedFeatureId || !this.selectedLayer) return;
-
             // Ignore shortcuts if the user is typing in form elements
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
                 return;
             }
 
             const key = e.key.toLowerCase();
-            if (key === 'x' || key === 'delete') {
+            
+            // Handle deletion shortcuts (X, Delete, Ctrl+X)
+            if (key === 'x' || key === 'delete' || (e.ctrlKey && key === 'x')) {
                 if (this.selectedVertices && this.selectedVertices.length > 0) {
                     e.preventDefault();
                     this.deleteSelectedVertices();
-                } else if (this.hoveredMarker) {
+                    return;
+                }
+                
+                // Only trigger individual marker deletion if feature is selected
+                if (this.selectedFeatureId && this.selectedLayer && this.hoveredMarker) {
                     e.preventDefault();
                     this.saveHistoryState();
                     this.hoveredMarker.fire('contextmenu'); // triggers Geoman vertex removal
@@ -453,7 +465,12 @@ class MapEditorController {
                     this.hoveredMarkerLayer = null;
                     this.showNotification('success', 'Nó excluído com sucesso (Tecla X/Del).');
                 }
-            } else if (key === 'f' || key === 'm') {
+            }
+            
+            // Only trigger other shortcuts if a feature is selected and editing is active
+            if (!this.selectedFeatureId || !this.selectedLayer) return;
+
+            if (key === 'f' || key === 'm') {
                 if (this.selectedVertices && this.selectedVertices.length > 0) {
                     e.preventDefault();
                     this.snapSelectedVertices();
@@ -473,6 +490,292 @@ class MapEditorController {
                         this.showNotification('success', 'Nó conectado ao vizinho (Tecla F/M).');
                     } else {
                         this.showNotification('error', 'Nenhum nó de outra nação próximo para conectar (limite de 150 km).');
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Binds box selection events (Windows-style drag selection)
+     */
+    bindBoxSelectionEvents() {
+        const mapContainer = document.getElementById('editor-map-container');
+        if (!mapContainer) return;
+
+        let lastClickTime = 0;
+        let lastClickLatLng = null;
+
+        // Use capture phase to intercept events before Leaflet/Geoman
+        mapContainer.addEventListener('mousedown', (e) => {
+            // Only trigger box selection if:
+            // - A feature is selected (we're in edit mode)
+            // - Left mouse button
+            // - Not clicking on a marker/vertex
+            // - Not holding Shift (that's for individual selection, unless in box selection mode)
+            // - Not clicking on interactive elements
+            if (!this.selectedFeatureId || !this.selectedLayer) return;
+            if (e.button !== 0) return; // Only left click
+            
+            // Check if clicking on marker or other interactive elements
+            const target = e.target;
+            if (target.classList.contains('leaflet-marker-icon') || 
+                target.classList.contains('leaflet-marker-pane') ||
+                target.closest('.leaflet-marker-icon') ||
+                target.closest('.leaflet-interactive')) {
+                return;
+            }
+
+            // Handle Shift+double click to activate box selection mode
+            const currentTime = Date.now();
+            const currentLatLng = this.map.mouseEventToLatLng(e);
+            
+            if (e.shiftKey && lastClickLatLng && 
+                currentTime - lastClickTime < 300 &&
+                lastClickLatLng.distanceTo(currentLatLng) < 10) {
+                // Shift+double click detected - toggle box selection mode
+                this.isBoxSelectionMode = !this.isBoxSelectionMode;
+                this.showNotification('info', this.isBoxSelectionMode ? 
+                    'Modo de seleção por retângulo ativado' : 
+                    'Modo de seleção por retângulo desativado');
+                lastClickTime = 0;
+                lastClickLatLng = null;
+                e.stopPropagation();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return;
+            }
+
+            lastClickTime = currentTime;
+            lastClickLatLng = currentLatLng;
+
+            // If in box selection mode or not holding shift, allow box selection
+            if (e.shiftKey && !this.isBoxSelectionMode) return; // Shift is for individual selection
+
+            const latlng = this.map.mouseEventToLatLng(e);
+            this.isBoxSelecting = true;
+            this.boxSelectStartLatLng = latlng;
+
+            // Create selection rectangle
+            if (this.boxSelectRectangle) {
+                this.map.removeLayer(this.boxSelectRectangle);
+            }
+
+            this.boxSelectRectangle = L.rectangle([latlng, latlng], {
+                color: '#0078d4',
+                weight: 1,
+                fillColor: '#0078d4',
+                fillOpacity: 0.2,
+                dashArray: '5, 5',
+                className: 'box-selection-rectangle'
+            }).addTo(this.map);
+
+            e.stopPropagation();
+            e.preventDefault();
+        }, true); // Use capture phase
+
+        mapContainer.addEventListener('mousemove', (e) => {
+            if (!this.isBoxSelecting || !this.boxSelectRectangle || !this.boxSelectStartLatLng) return;
+
+            const currentLatLng = this.map.mouseEventToLatLng(e);
+            const bounds = L.latLngBounds(this.boxSelectStartLatLng, currentLatLng);
+            this.boxSelectRectangle.setBounds(bounds);
+        }, true);
+
+        mapContainer.addEventListener('mouseup', (e) => {
+            if (!this.isBoxSelecting || !this.boxSelectRectangle || !this.boxSelectStartLatLng) return;
+
+            const endLatLng = this.map.mouseEventToLatLng(e);
+            const bounds = L.latLngBounds(this.boxSelectStartLatLng, endLatLng);
+
+            // Remove the selection rectangle
+            this.map.removeLayer(this.boxSelectRectangle);
+            this.boxSelectRectangle = null;
+            this.isBoxSelecting = false;
+            this.boxSelectStartLatLng = null;
+
+            // Select vertices within the bounds
+            this.selectVerticesInBounds(bounds);
+
+            e.stopPropagation();
+            e.preventDefault();
+        }, true);
+
+        // Cancel box selection on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.isBoxSelecting) {
+                    if (this.boxSelectRectangle) {
+                        this.map.removeLayer(this.boxSelectRectangle);
+                        this.boxSelectRectangle = null;
+                    }
+                    this.isBoxSelecting = false;
+                    this.boxSelectStartLatLng = null;
+                }
+                if (this.isBoxSelectionMode) {
+                    this.isBoxSelectionMode = false;
+                    this.showNotification('info', 'Modo de seleção por retângulo desativado');
+                }
+            }
+        });
+    }
+
+    /**
+     * Selects all vertices within the given bounds
+     */
+    selectVerticesInBounds(bounds) {
+        if (!this.selectedLayer) return;
+
+        // Get all markers from the selected layer using Geoman's internal structure
+        const markers = [];
+        
+        // Geoman stores markers in different ways depending on the layer type
+        if (this.selectedLayer.pm && this.selectedLayer.pm._markers) {
+            const pmMarkers = this.selectedLayer.pm._markers;
+            
+            // Handle different marker structures (nested arrays for polygons/holes)
+            const collectMarkers = (markerArray) => {
+                if (Array.isArray(markerArray)) {
+                    markerArray.forEach(item => {
+                        if (item && typeof item === 'object') {
+                            if (item.getLatLng && typeof item.getLatLng === 'function') {
+                                // This is a marker
+                                markers.push(item);
+                            } else {
+                                // This might be a nested array
+                                collectMarkers(item);
+                            }
+                        }
+                    });
+                }
+            };
+            
+            collectMarkers(pmMarkers);
+        }
+
+        // Also check for markers in the layer's _map if available
+        if (this.selectedLayer._map) {
+            this.selectedLayer._map.eachLayer(layer => {
+                if (layer instanceof L.Marker && layer._parent === this.selectedLayer) {
+                    markers.push(layer);
+                }
+            });
+        }
+
+        // Check each marker if it's within bounds
+        let selectedCount = 0;
+        markers.forEach(marker => {
+            try {
+                const latlng = marker.getLatLng();
+                if (bounds.contains(latlng)) {
+                    // Get the indexPath for this marker
+                    let indexPath = null;
+                    
+                    // Try to get indexPath from marker's internal property
+                    if (marker._indexPath) {
+                        indexPath = marker._indexPath;
+                    } else if (marker._relatedLatLng && marker._relatedLatLng.path) {
+                        indexPath = marker._relatedLatLng.path;
+                    } else {
+                        // Try to find indexPath from existing selected vertices
+                        const existingVertex = this.selectedVertices.find(v => v.marker === marker);
+                        if (existingVertex) {
+                            indexPath = existingVertex.indexPath;
+                        }
+                    }
+
+                    if (indexPath) {
+                        this.toggleVertexSelection(marker, this.selectedLayer, indexPath, true);
+                        selectedCount++;
+                    }
+                }
+            } catch (e) {
+                // Skip markers that can't be processed
+                console.warn('Error processing marker:', e);
+            }
+        });
+
+        if (selectedCount > 0) {
+            this.showNotification('success', `${selectedCount} nó(ns) selecionado(s)`);
+        } else {
+            this.showNotification('info', 'Nenhum nó encontrado na área selecionada');
+        }
+    }
+
+    /**
+     * Toggles vertex selection (with optional force select)
+     */
+    toggleVertexSelection(marker, layer, indexPath, forceSelect = false) {
+        if (!indexPath) return;
+
+        const pathStr = indexPath.join(',');
+        const el = marker.getElement();
+
+        if (this.selectedPaths[pathStr] && !forceSelect) {
+            // Deselect
+            delete this.selectedPaths[pathStr];
+            if (el) el.classList.remove('gee-selected-vertex');
+
+            const idx = this.selectedVertices.findIndex(v => 
+                v.indexPath && v.indexPath.join(',') === pathStr
+            );
+            if (idx !== -1) {
+                this.selectedVertices.splice(idx, 1);
+            }
+        } else {
+            // Select
+            this.selectedPaths[pathStr] = true;
+            if (el) el.classList.add('gee-selected-vertex');
+
+            const existingIdx = this.selectedVertices.findIndex(v => 
+                v.indexPath && v.indexPath.join(',') === pathStr
+            );
+            if (existingIdx === -1) {
+                this.selectedVertices.push({ marker, layer, indexPath });
+            } else {
+                this.selectedVertices[existingIdx].marker = marker;
+                this.selectedVertices[existingIdx].layer = layer;
+            }
+        }
+
+        this.updateSelectedNodesUI();
+    }
+
+    /**
+     * Updates the UI for selected nodes count and buttons
+     */
+    updateSelectedNodesUI() {
+        const countSpan = document.getElementById('geom-selected-nodes-count');
+        const section = document.getElementById('geom-multi-select-section');
+
+        if (countSpan) {
+            countSpan.textContent = this.selectedVertices.length;
+        }
+
+        if (section) {
+            section.style.display = this.selectedVertices.length > 0 ? 'block' : 'none';
+        }
+
+        // Force all selected markers to stay visible
+        this.forceSelectedMarkersVisibility();
+    }
+
+    /**
+     * Forces all selected markers to remain visible
+     */
+    forceSelectedMarkersVisibility() {
+        if (!this.selectedVertices || this.selectedVertices.length === 0) return;
+
+        this.selectedVertices.forEach(v => {
+            if (v.marker) {
+                const el = v.marker.getElement();
+                if (el) {
+                    el.classList.add('gee-selected-vertex');
+                    v.marker.setOpacity(1);
+                    if (v.marker._icon) {
+                        v.marker._icon.style.display = 'block';
+                        v.marker._icon.style.visibility = 'visible';
+                        v.marker._icon.style.opacity = '1';
                     }
                 }
             }
@@ -941,7 +1244,9 @@ class MapEditorController {
                 allowSelfIntersection: false,
                 snappingOption: true,
                 snapDistance: 20,
-                limitMarkersToCount: 150
+                limitMarkersToCount: 500, // Increased limit for better visibility
+                draggable: true,
+                preventMarkerRemoval: false
             });
 
             layer.on('pm:edit', () => {
@@ -978,7 +1283,15 @@ class MapEditorController {
                     if (this.selectedPaths && this.selectedPaths[pathStr]) {
                         setTimeout(() => {
                             const el = marker.getElement();
-                            if (el) el.classList.add('gee-selected-vertex');
+                            if (el) {
+                                el.classList.add('gee-selected-vertex');
+                                // Force marker to stay visible
+                                marker.setOpacity(1);
+                                if (marker._icon) {
+                                    marker._icon.style.display = 'block';
+                                    marker._icon.style.visibility = 'visible';
+                                }
+                            }
                         }, 10);
                         
                         const sIdx = this.selectedVertices.findIndex(v => v.indexPath.join(',') === pathStr);
@@ -1003,6 +1316,22 @@ class MapEditorController {
                     if (this.hoveredMarker === marker) {
                         this.hoveredMarker = null;
                         this.hoveredMarkerLayer = null;
+                    }
+                });
+
+                // Ensure selected markers always stay visible
+                marker.on('move', () => {
+                    const pathStr = indexPath ? indexPath.join(',') : null;
+                    if (pathStr && this.selectedPaths && this.selectedPaths[pathStr]) {
+                        const el = marker.getElement();
+                        if (el) {
+                            el.classList.add('gee-selected-vertex');
+                            marker.setOpacity(1);
+                            if (marker._icon) {
+                                marker._icon.style.display = 'block';
+                                marker._icon.style.visibility = 'visible';
+                            }
+                        }
                     }
                 });
 
@@ -1222,47 +1551,6 @@ class MapEditorController {
             current = current[path[i]];
         }
         current[path[path.length - 1]] = newLatLng;
-    }
-
-    toggleVertexSelection(marker, layer, indexPath) {
-        this.selectedVertices = this.selectedVertices || [];
-        this.selectedPaths = this.selectedPaths || {};
-        
-        if (!indexPath) return;
-        const pathStr = indexPath.join(',');
-        
-        const el = marker.getElement();
-
-        if (this.selectedPaths[pathStr]) {
-            // Deselect
-            delete this.selectedPaths[pathStr];
-            const idx = this.selectedVertices.findIndex(v => v.indexPath.join(',') === pathStr);
-            if (idx !== -1) this.selectedVertices.splice(idx, 1);
-            if (el) el.classList.remove('gee-selected-vertex');
-            this.showNotification('info', 'Nó desmarcado.');
-        } else {
-            // Select
-            this.selectedPaths[pathStr] = true;
-            this.selectedVertices.push({ marker, layer, indexPath });
-            if (el) el.classList.add('gee-selected-vertex');
-            this.showNotification('info', 'Nó adicionado à seleção.');
-        }
-        
-        this.updateSelectedNodesUI();
-    }
-
-    updateSelectedNodesUI() {
-        const section = document.getElementById('geom-multi-select-section');
-        const countSpan = document.getElementById('geom-selected-nodes-count');
-        if (!section || !countSpan) return;
-        
-        const count = this.selectedVertices ? this.selectedVertices.length : 0;
-        if (count > 0) {
-            countSpan.textContent = count;
-            section.style.display = 'block';
-        } else {
-            section.style.display = 'none';
-        }
     }
 
     deleteSelectedVertices() {
