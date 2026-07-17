@@ -105,6 +105,16 @@ window.MC_NationsData_Napoleonic = {
             "gdp": 4500,
             "militaryStrength": 70
         },
+        "acre": {
+            "name": "República do Acre",
+            "fullName": "República do Acre",
+            "color": "#2e7d32", // Forest Green
+            "capital": "Rio Branco",
+            "flag": "🌴",
+            "continent": "americas",
+            "gdp": 500,
+            "militaryStrength": 25
+        },
         "neutral": {
             "name": "Independente",
             "fullName": "Nações e Territórios Independentes",
@@ -245,7 +255,8 @@ window.MC_NationsData_Napoleonic = {
         "siam": "neutral",
         "united_states_of_america": "usa",
         "luisiana": "usa",
-        "vice_royalty_of_brazil": "portugal"
+        "vice_royalty_of_brazil": "portugal",
+        "acre": "acre"
     },
 
     "puppets": {
